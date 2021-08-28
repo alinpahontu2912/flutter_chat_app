@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
 
 class AuthForm extends StatefulWidget {
-  AuthForm(this.submitFn);
+  AuthForm(this.submitFn, this.isLoading);
 
-  final void Function(
-      String emil, String password, String username, bool isLogin) submitFn;
+  final bool isLoading;
+  final void Function(String emil, String password, String username,
+      bool isLogin, BuildContext context) submitFn;
 
   @override
   State<StatefulWidget> createState() => _AuthFormState();
@@ -22,8 +23,14 @@ class _AuthFormState extends State<AuthForm> {
     FocusScope.of(context).unfocus();
 
     if (isValid) {
+      print('AAAAAAAAAAAAA');
+      print(_userEmail);
+      print(_userPassword);
       _formKey.currentState.save();
-      widget.submitFn(_userEmail, _userPassword, _userName, isLogin);
+      widget.submitFn(
+          _userEmail.trim(), _userPassword, _userName, isLogin, context);
+    } else {
+      print('CEVASVDASVDASF');
     }
   }
 
@@ -89,21 +96,24 @@ class _AuthFormState extends State<AuthForm> {
                   SizedBox(
                     height: 12,
                   ),
-                  RaisedButton(
-                    child: Text(isLogin ? 'Log in' : 'Sign up'),
-                    onPressed: _trySubmit,
-                  ),
-                  FlatButton(
-                    textColor: Theme.of(context).primaryColor,
-                    child: Text(isLogin
-                        ? 'Create new account'
-                        : 'I already have an account'),
-                    onPressed: () {
-                      setState(() {
-                        isLogin = !isLogin;
-                      });
-                    },
-                  )
+                  if (widget.isLoading) CircularProgressIndicator(),
+                  if (!widget.isLoading)
+                    RaisedButton(
+                      child: Text(isLogin ? 'Log in' : 'Sign up'),
+                      onPressed: _trySubmit,
+                    ),
+                  if (!widget.isLoading)
+                    FlatButton(
+                      textColor: Theme.of(context).primaryColor,
+                      child: Text(isLogin
+                          ? 'Create new account'
+                          : 'I already have an account'),
+                      onPressed: () {
+                        setState(() {
+                          isLogin = !isLogin;
+                        });
+                      },
+                    )
                 ],
               ),
             ),
